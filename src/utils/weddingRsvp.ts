@@ -8,7 +8,11 @@ import {
 
 export function defaultWeddingRsvp(): WeddingRsvp {
   return {
-    email: "",
+    recipient: {
+      name: "",
+      surname: "",
+      email: "",
+    },
     participating: undefined,
     details: {
       guests: {
@@ -17,6 +21,7 @@ export function defaultWeddingRsvp(): WeddingRsvp {
         Child: [],
         Baby: [],
       },
+      fromAbroad: undefined,
       requiresTransport: undefined,
       requiresAccommodation: undefined,
     },

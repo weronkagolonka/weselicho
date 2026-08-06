@@ -12,11 +12,11 @@ export const Summary = () => {
       <h2>Summary</h2>
       {state.participating ? (
         <Row className="mb-3">
-          <Col>
+          <Col xs={12} xl={6}>
             <h4>Details:</h4>
             <Row className="mb-3">
               <h5>Confirmation email:</h5>
-              <div>{state.email}</div>
+              <div>{state.recipient.email}</div>
             </Row>
             <Row className="mb-3">
               <h5>Transport required:</h5>
@@ -27,7 +27,7 @@ export const Summary = () => {
               <div>{state.details.requiresAccommodation ? "yes" : "no"}</div>
             </Row>
           </Col>
-          <Col>
+          <Col xs={12} xl={6}>
             <h4>Guests:</h4>
             <h5>Adults:</h5>
             <ListGroup className="mb-3">

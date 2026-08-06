@@ -11,6 +11,9 @@ export const Home = () => {
   });
   const navigate = useNavigate();
 
+  // QR code could include adult names and be prepended to the state object
+  // get adult names from search params
+
   return (
     <Container className="min-vh-100 d-flex flex-column align-items-center justify-content-start gap-3">
       <Image src={homePic} fluid style={{ maxHeight: "400px" }} />
@@ -18,7 +21,7 @@ export const Home = () => {
         onClick={() => {
           // Reset the form state
           actions.updateAction(defaultWeddingRsvp());
-          navigate(pages.email);
+          navigate(pages.confirmationDetails);
         }}
       >
         Add your RSVP

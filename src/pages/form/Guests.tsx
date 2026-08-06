@@ -340,8 +340,10 @@ export const Guests = () => {
   return (
     <Container>
       <Row>
-        <Col>{addGuestsForm}</Col>
-        <Col className="p-4">
+        <Col xs={12} xl={6}>
+          {addGuestsForm}
+        </Col>
+        <Col xs={12} xl={6} className="p-4">
           <h2 className="mb-3">Registered guests:</h2>
           <h4>Adults (18+ years old):</h4>
           <ListGroup as="ol" className="mb-3">

@@ -29,7 +29,7 @@ export const OtherDetails = () => {
         name="details.requiresTransport"
         control={control}
         rules={{
-          required: "Please choose",
+          validate: (value) => value !== undefined || "Please choose",
         }}
         render={({ field }) => {
           return (
@@ -58,41 +58,42 @@ export const OtherDetails = () => {
           );
         }}
       />
-      <Controller
-        name="details.requiresAccommodation"
-        control={control}
-        render={({ field }) => {
-          return (
-            <Form.Group className="mb-3">
-              <Form.Label>
-                For guests from abroad: do you require accommodation? We can
-                offer a 2-nights stay at a hotel in Katowice.
-              </Form.Label>
-              <Form.Check
-                type="radio"
-                label="Yes"
-                value="Yes"
-                checked={field.value}
-                onChange={() => field.onChange(true)}
-              />
-              <Form.Check
-                type="radio"
-                label="No"
-                value="No"
-                checked={field.value === undefined ? undefined : !field.value}
-                onChange={() => field.onChange(false)}
-              />
-              <Form.Check
-                type="radio"
-                label="Not applicable"
-                value="Not applicable"
-                checked={field.value === undefined}
-                onChange={() => field.onChange(undefined)}
-              />
-            </Form.Group>
-          );
-        }}
-      />
+      {state.details.fromAbroad ? (
+        <Controller
+          name="details.requiresAccommodation"
+          control={control}
+          rules={{
+            validate: (value) => value !== undefined || "Please choose",
+          }}
+          render={({ field }) => {
+            return (
+              <Form.Group className="mb-3">
+                <Form.Label>
+                  Do you require accommodation? We can offer a 2-nights stay at
+                  a hotel in Katowice.
+                </Form.Label>
+                <Form.Check
+                  type="radio"
+                  label="Yes"
+                  value="Yes"
+                  checked={field.value}
+                  onChange={() => field.onChange(true)}
+                />
+                <Form.Check
+                  type="radio"
+                  label="No"
+                  value="No"
+                  checked={field.value === undefined ? undefined : !field.value}
+                  onChange={() => field.onChange(false)}
+                />
+                <Form.Text>
+                  {formState.errors.details?.requiresAccommodation?.message}
+                </Form.Text>
+              </Form.Group>
+            );
+          }}
+        />
+      ) : null}
       <FormButtons previousPage={pages.guests} />
     </Form>
   );

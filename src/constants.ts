@@ -13,8 +13,9 @@ export const guestFormFieldIds = {
 
 export const pages = {
   home: "/",
-  email: "/form-email",
+  confirmationDetails: "/form-confirmation-details",
   participation: "/form-participation",
+  guestLocation: "/form-guest-location",
   guests: "/form-guests",
   otherDetails: "/form-other-details",
   summary: "/form-summary",

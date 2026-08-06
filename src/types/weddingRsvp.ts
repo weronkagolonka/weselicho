@@ -35,11 +35,19 @@ export type GuestList = Record<
 
 export type RsvpDetails = {
   guests: GuestList;
+  fromAbroad?: boolean;
   requiresTransport?: boolean;
   requiresAccommodation?: boolean;
 };
-export interface WeddingRsvp {
+
+export type Recipient = {
   email: string;
+  name: string;
+  surname: string;
+};
+
+export interface WeddingRsvp {
+  recipient: Recipient;
   participating?: boolean;
   details: RsvpDetails;
 }
