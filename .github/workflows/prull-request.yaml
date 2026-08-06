@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  deploy-preview:
+  build:
     runs-on: ubuntu-latest
 
     steps:
