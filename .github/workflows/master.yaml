@@ -1,4 +1,4 @@
-name: Deploy Production to Vercel
+name: Master
 
 on:
   push:
