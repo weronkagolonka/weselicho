@@ -19,4 +19,5 @@ export const pages = {
   guests: "/form-guests",
   otherDetails: "/form-other-details",
   summary: "/form-summary",
+  completion: "/form-completion",
 };

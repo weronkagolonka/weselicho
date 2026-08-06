@@ -1,17 +1,19 @@
 import { useStateMachine } from "little-state-machine";
 import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import type { WeddingRsvp } from "../../types/weddingRsvp";
 import { updateRsvp } from "../../utils/weddingRsvp";
 import { FormButtons } from "../../components/FormButtons";
 import { pages } from "../../constants";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export const ConfirmationDetails = () => {
   const { state, actions } = useStateMachine({
     actions: { updateAction: updateRsvp },
   });
-  const { register, handleSubmit } = useForm<WeddingRsvp>({
+  const { register, control, handleSubmit } = useForm<WeddingRsvp>({
     defaultValues: state,
   });
   const navigate = useNavigate();
@@ -31,15 +33,30 @@ export const ConfirmationDetails = () => {
       </div>
       <Form.Group className="mb-3">
         <Form.Label>Email address</Form.Label>
-        <Form.Control
-          {...register("recipient.email")}
-          type="email"
-          required
-          className="mb-3"
+        <Form.Control {...register("recipient.email")} type="email" required />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Phone number</Form.Label>
+        <Controller
+          control={control}
+          name="recipient.phone"
+          render={({ field }) => (
+            <PhoneInput
+              defaultCountry="PL"
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+              }}
+            />
+          )}
         />
+      </Form.Group>
+      <Form.Group className="mb-3">
         <Form.Label>Recipient name</Form.Label>
-        <Form.Control {...register("recipient.name")} className="mb-3" />
-        <Form.Label>Recipent surname</Form.Label>
+        <Form.Control {...register("recipient.name")} />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Recipient surname</Form.Label>
         <Form.Control required {...register("recipient.surname")} />
       </Form.Group>
       <FormButtons previousPage={pages.home} />

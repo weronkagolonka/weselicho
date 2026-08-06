@@ -3,6 +3,7 @@ import {
   GuestType,
   type BabyGuest,
   type Guest,
+  type Guestt,
   type WeddingRsvp,
 } from "../types/weddingRsvp";
 
@@ -12,15 +13,11 @@ export function defaultWeddingRsvp(): WeddingRsvp {
       name: "",
       surname: "",
       email: "",
+      phone: "",
     },
     participating: undefined,
     details: {
-      guests: {
-        Adult: [],
-        Teen: [],
-        Child: [],
-        Baby: [],
-      },
+      guests: [],
       fromAbroad: undefined,
       requiresTransport: undefined,
       requiresAccommodation: undefined,
@@ -28,20 +25,12 @@ export function defaultWeddingRsvp(): WeddingRsvp {
   };
 }
 
-export function defaultGuest(guestType: GuestType): Guest | BabyGuest {
-  if (guestType === GuestType.Baby) {
-    return {
-      name: "",
-      surname: "",
-      requiresFood: false,
-      requiresHighChair: false,
-    };
-  }
+export function defaultGuest(guestType: GuestType): Guestt {
   return {
+    type: guestType,
     name: "",
     surname: "",
     dietaryRestriction: DietaryRestriction.None,
-    pregnant: false,
   };
 }
 
@@ -67,4 +56,8 @@ export function updateRsvp(
       ...payload.details,
     },
   };
+}
+
+export function getGuestsofType(type: GuestType, guests: Guestt[]): Guestt[] {
+  return guests.filter((g) => g.type === type);
 }

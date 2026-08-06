@@ -8,29 +8,26 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import {
-  useFieldArray,
-  useForm,
-  useWatch,
-  type UseFieldArrayReturn,
-} from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
   DietaryRestriction,
   GuestType,
-  type BabyGuest,
-  type Guest,
-  type GuestList,
+  type Guestt,
   type WeddingRsvp,
 } from "../../types/weddingRsvp";
-import { defaultGuest, updateRsvp } from "../../utils/weddingRsvp";
+import {
+  defaultGuest,
+  getGuestsofType,
+  updateRsvp,
+} from "../../utils/weddingRsvp";
 import { FormButtons } from "../../components/FormButtons";
 import { pages } from "../../constants";
 import { useNavigate } from "react-router";
 
 type GuestForm = {
   guestType: GuestType;
-  newGuest: Guest | BabyGuest;
-  guestList: GuestList;
+  newGuest: Guestt;
+  guestList: Guestt[];
 };
 
 export const Guests = () => {
@@ -44,38 +41,23 @@ export const Guests = () => {
   const guestForm = useForm<GuestForm>({
     defaultValues: {
       guestType: GuestType.Adult,
-      newGuest: defaultGuest(GuestType.Adult),
+      newGuest:
+        getGuestsofType(GuestType.Adult, rsvpState.state.details.guests)
+          .length === 0
+          ? ({
+              ...defaultGuest(GuestType.Adult),
+              type: GuestType.Adult,
+              name: rsvpState.state.recipient.name,
+              surname: rsvpState.state.recipient.surname,
+            } as Guestt)
+          : defaultGuest(GuestType.Adult),
       guestList: rsvpState.state.details.guests,
     },
   });
-  const guestFieldArrays: Record<
-    GuestType,
-    UseFieldArrayReturn<
-      GuestForm,
-      | "guestList.Adult"
-      | "guestList.Teen"
-      | "guestList.Child"
-      | "guestList.Baby",
-      string
-    >
-  > = {
-    [GuestType.Adult]: useFieldArray({
-      control: guestForm.control,
-      name: "guestList.Adult",
-    }),
-    [GuestType.Teen]: useFieldArray({
-      control: guestForm.control,
-      name: "guestList.Teen",
-    }),
-    [GuestType.Child]: useFieldArray({
-      control: guestForm.control,
-      name: "guestList.Child",
-    }),
-    [GuestType.Baby]: useFieldArray({
-      control: guestForm.control,
-      name: "guestList.Baby",
-    }),
-  };
+  const guests = useFieldArray({
+    control: guestForm.control,
+    name: "guestList",
+  });
 
   const guestType = useWatch({
     control: guestForm.control,
@@ -89,19 +71,26 @@ export const Guests = () => {
   const onAddGuestSubmit = (data: GuestForm) => {
     if (
       data.guestType === GuestType.Adult &&
-      guestFieldArrays.Adult.fields.length === 2
+      getGuestsofType(GuestType.Adult, guests.fields).length === 2
     ) {
-      guestForm.setError("guestList.Adult", {
+      guestForm.setError("guestList", {
         message: "Up to 2 adult guests are allowed",
       });
+    } else if (
+      guests.fields.find(
+        (g) =>
+          g.type === data.newGuest.type &&
+          g.name === data.newGuest.name &&
+          g.surname === data.newGuest.surname,
+      )
+    ) {
+      guestForm.setError("guestList", {
+        message: `${data.newGuest.name} ${data.newGuest.surname} is already added`,
+      });
     } else {
-      if (data.guestType === GuestType.Baby) {
-        guestFieldArrays.Baby.append(data.newGuest as BabyGuest);
-      } else {
-        guestFieldArrays[data.guestType].append(data.newGuest as Guest);
-        if (data.guestType === GuestType.Adult) {
-          rsvpForm.clearErrors("details.guests.Adult");
-        }
+      guests.append(data.newGuest);
+      if (data.guestType === GuestType.Adult) {
+        rsvpForm.clearErrors("details.guests");
       }
 
       guestForm.reset({
@@ -112,20 +101,19 @@ export const Guests = () => {
     }
   };
 
-  const removeGuest = (
-    removedGuestType: GuestType,
-    removedGuestIndex: number,
-  ) => {
-    if (removedGuestType === GuestType.Baby) {
-      guestFieldArrays.Baby.remove(removedGuestIndex);
-    } else {
-      guestFieldArrays[removedGuestType].remove(removedGuestIndex);
-    }
+  const removeGuest = (guest: Guestt) => {
+    const index = guests.fields.findIndex(
+      (g) =>
+        g.type === guest.type &&
+        g.name === guest.name &&
+        g.surname === guest.surname,
+    );
+    guests.remove(index);
   };
 
   const onSubmit = () => {
-    if (guestFieldArrays.Adult.fields.length === 0) {
-      rsvpForm.setError("details.guests.Adult", {
+    if (getGuestsofType(GuestType.Adult, guests.fields).length === 0) {
+      rsvpForm.setError("details.guests", {
         message: "One or two adults are required",
       });
     } else {
@@ -140,9 +128,10 @@ export const Guests = () => {
     }
   };
 
-  const registeredAdults =
-    guestFieldArrays.Adult.fields.length > 0 ? (
-      guestFieldArrays.Adult.fields.map((a, index) => (
+  const registeredAdults = () => {
+    const adults = getGuestsofType(GuestType.Adult, guests.fields);
+    return adults.length > 0 ? (
+      adults.map((a, index) => (
         <ListGroup.Item
           key={`adult-${index}`}
           as="li"
@@ -158,15 +147,17 @@ export const Guests = () => {
               : ""}
             {a.pregnant ? ", no alcohol" : ""}
           </div>
-          <CloseButton onClick={() => removeGuest(GuestType.Adult, index)} />
+          <CloseButton onClick={() => removeGuest(a)} />
         </ListGroup.Item>
       ))
     ) : (
       <p>No Adults registered - must register at least one.</p>
     );
-  const registeredTeens =
-    guestFieldArrays.Teen.fields.length > 0 ? (
-      guestFieldArrays.Teen.fields.map((t, index) => (
+  };
+  const registeredTeens = () => {
+    const teens = getGuestsofType(GuestType.Teen, guests.fields);
+    return teens.length > 0 ? (
+      teens.map((t, index) => (
         <ListGroup.Item
           key={`teen-${index}`}
           as="li"
@@ -181,15 +172,17 @@ export const Guests = () => {
               ? `, allergy/intolerance: ${t.allergy}`
               : ""}
           </div>
-          <CloseButton onClick={() => removeGuest(GuestType.Teen, index)} />
+          <CloseButton onClick={() => removeGuest(t)} />
         </ListGroup.Item>
       ))
     ) : (
       <p>No registered teens.</p>
     );
-  const registeredChildren =
-    guestFieldArrays.Child.fields.length > 0 ? (
-      guestFieldArrays.Child.fields.map((c, index) => (
+  };
+  const registeredChildren = () => {
+    const children = getGuestsofType(GuestType.Child, guests.fields);
+    return children.length > 0 ? (
+      children.map((c, index) => (
         <ListGroup.Item
           key={`child-${index}`}
           as="li"
@@ -204,15 +197,17 @@ export const Guests = () => {
               ? `, allergy/intolerance: ${c.allergy}`
               : ""}
           </div>
-          <CloseButton onClick={() => removeGuest(GuestType.Child, index)} />
+          <CloseButton onClick={() => removeGuest(c)} />
         </ListGroup.Item>
       ))
     ) : (
       <p>No children registered.</p>
     );
-  const registeredBabies =
-    guestFieldArrays.Baby.fields.length > 0 ? (
-      guestFieldArrays.Baby.fields.map((b, index) => (
+  };
+  const registeredBabies = () => {
+    const babies = getGuestsofType(GuestType.Baby, guests.fields);
+    return babies.length > 0 ? (
+      babies.map((b, index) => (
         <ListGroup.Item
           key={`baby-${index}`}
           as="li"
@@ -225,12 +220,13 @@ export const Guests = () => {
             Requires food: {b.requiresFood ? "yes" : "no"}, requires separate
             chair: {b.requiresHighChair ? "yes" : "no"}
           </div>
-          <CloseButton onClick={() => removeGuest(GuestType.Baby, index)} />
+          <CloseButton onClick={() => removeGuest(b)} />
         </ListGroup.Item>
       ))
     ) : (
       <p>No babies registered.</p>
     );
+  };
 
   const addGuestsForm = (
     <Form
@@ -248,7 +244,7 @@ export const Guests = () => {
               guestType: e.target.value as GuestType,
               newGuest: defaultGuest(e.target.value as GuestType),
             });
-            guestForm.clearErrors("guestList.Adult");
+            guestForm.clearErrors("guestList");
           }}
         >
           {Object.values(GuestType).map((gt, index) => {
@@ -332,10 +328,12 @@ export const Guests = () => {
         Add guest
       </Button>
       <Form.Text className="mx-3">
-        {guestForm.formState.errors.guestList?.Adult?.message}
+        {guestForm.formState.errors.guestList?.message}
       </Form.Text>
     </Form>
   );
+
+  // TODO pull recipient's name and ask for pregnant and diet.
 
   return (
     <Container>
@@ -347,18 +345,18 @@ export const Guests = () => {
           <h2 className="mb-3">Registered guests:</h2>
           <h4>Adults (18+ years old):</h4>
           <ListGroup as="ol" className="mb-3">
-            {registeredAdults}
+            {registeredAdults()}
           </ListGroup>
           <h4>Teens (11-17 years old):</h4>
           <ListGroup as="ol" className="mb-3">
-            {registeredTeens}
+            {registeredTeens()}
           </ListGroup>
           <h4>Children (3-10 years old):</h4>
           <ListGroup as="ol" className="mb-3">
-            {registeredChildren}
+            {registeredChildren()}
           </ListGroup>
           <h4>Babies (0-2 years old):</h4>
-          <ListGroup as="ol">{registeredBabies}</ListGroup>
+          <ListGroup as="ol">{registeredBabies()}</ListGroup>
         </Col>
       </Row>
 
@@ -371,7 +369,7 @@ export const Guests = () => {
           previousPage={pages.participation}
         />
         <Form.Text className="mx-3">
-          {rsvpForm.formState.errors.details?.guests?.Adult?.message}
+          {rsvpForm.formState.errors.details?.guests?.message}
         </Form.Text>
       </Form>
     </Container>
