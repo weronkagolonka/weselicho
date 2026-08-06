@@ -21,7 +21,7 @@ export const Participation = () => {
       actions.updateAction(data);
       navigate(pages.guestLocation);
     } else {
-      navigate(pages.summary);
+      navigate(pages.completion);
     }
   };
 

@@ -10,6 +10,7 @@ import { OtherDetails } from "./pages/form/OtherDetails";
 import { GuestLocation } from "./pages/form/GuestLocation";
 import { ConfirmationDetails } from "./pages/form/ConfirmationDetails";
 import { Guests } from "./pages/form/Guests";
+import { Completion } from "./pages/form/Completion";
 
 createStore(defaultWeddingRsvp());
 
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
       {
         path: pages.summary,
         Component: Summary,
+      },
+      {
+        path: pages.completion,
+        Component: Completion,
       },
     ],
   },

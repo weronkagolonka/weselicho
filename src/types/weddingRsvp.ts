@@ -12,6 +12,17 @@ export enum GuestType {
   Baby = "Baby",
 }
 
+export type Guestt = {
+  type: GuestType;
+  name: string;
+  surname: string;
+  pregnant?: boolean;
+  dietaryRestriction?: DietaryRestriction;
+  allergy?: string;
+  requiresHighChair?: boolean;
+  requiresFood?: boolean;
+};
+
 export type Guest = {
   name: string;
   surname: string;
@@ -34,7 +45,7 @@ export type GuestList = Record<
   Record<GuestType.Baby, BabyGuest[]>;
 
 export type RsvpDetails = {
-  guests: GuestList;
+  guests: Guestt[];
   fromAbroad?: boolean;
   requiresTransport?: boolean;
   requiresAccommodation?: boolean;
