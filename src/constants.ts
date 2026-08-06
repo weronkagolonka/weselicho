@@ -12,7 +12,7 @@ export const guestFormFieldIds = {
 };
 
 export const pages = {
-  form: "/form",
+  home: "/",
   email: "/form-email",
   participation: "/form-participation",
   guests: "/form-guests",

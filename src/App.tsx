@@ -1,13 +1,24 @@
+import { Container, Image } from "react-bootstrap";
 import { Outlet } from "react-router";
+import sosnowitz from "./assets/sosnowitz.png";
+import lenguiny from "./assets/lenguiny.png";
 
 // TODO: add localization
 
 function App() {
   return (
-    <div>
-      <h1>Weselicho</h1>
-      <Outlet />
-    </div>
+    <Container className="min-vh-100 d-flex flex-column">
+      <div className="d-flex align-items-center justify-content-between">
+        <Image src={sosnowitz} style={{ maxHeight: "150px" }} />
+
+        <h1 className="mb-0">Weselicho</h1>
+
+        <Image src={lenguiny} style={{ maxHeight: "120px" }} />
+      </div>
+      <div className="flex-grow-1 d-flex align-items-start justify-content-center">
+        <Outlet />
+      </div>
+    </Container>
   );
 }
 

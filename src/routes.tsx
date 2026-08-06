@@ -1,30 +1,25 @@
 import { createStore } from "little-state-machine";
 import { createBrowserRouter } from "react-router";
 import App from "./App";
-import { Email } from "./components/form/pages/Email";
-import { Guests } from "./components/form/pages/Guests";
-import { Participation } from "./components/form/pages/Participation";
+import { Email } from "./pages/form/Email";
+import { Guests } from "./pages/form/Guests";
+import { Participation } from "./pages/form/Participation";
 import { pages } from "./constants";
-import { GuestFormPage } from "./pages/GuestFormPage";
 import { Home } from "./pages/HomePage";
 import { defaultWeddingRsvp } from "./utils/weddingRsvp";
-import { Summary } from "./components/form/pages/Summary";
-import { OtherDetails } from "./components/form/pages/OtherDetails";
+import { Summary } from "./pages/form/Summary";
+import { OtherDetails } from "./pages/form/OtherDetails";
 
 createStore(defaultWeddingRsvp());
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: pages.home,
     Component: App,
     children: [
       {
         index: true,
         Component: Home,
-      },
-      {
-        path: pages.form,
-        Component: GuestFormPage,
       },
       {
         path: pages.email,

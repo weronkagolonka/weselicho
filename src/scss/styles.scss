@@ -1,2 +1,17 @@
-// Import all of Bootstrap’s CSS
+@import url("https://fonts.googleapis.com/css2?family=Pirata+One&display=swap");
+@import "variables";
+
+$font-family-sans-serif: "Pirata One", system-ui;
+$primary: $rsvp-font-color;
+$body-color: $rsvp-font-color;
+
 @import "bootstrap/scss/bootstrap";
+
+body {
+    background-color: $rsvp-background-color;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+        url("../assets/background.png");
+    background-size: cover;
+    background-position: center;
+}

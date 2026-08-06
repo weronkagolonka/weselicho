@@ -21,7 +21,7 @@ export const FormButtons = (props: FormButtonsProps) => {
       <Button
         onClick={() => {
           actions.updateAction(defaultWeddingRsvp());
-          navigate(pages.form);
+          navigate(pages.home);
         }}
         variant="light"
       >
