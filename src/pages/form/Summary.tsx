@@ -19,6 +19,10 @@ export const Summary = () => {
               <div>{state.recipient.email}</div>
             </Row>
             <Row className="mb-3">
+              <h5>Phone number:</h5>
+              <div>{state.recipient.phone}</div>
+            </Row>
+            <Row className="mb-3">
               <h5>Transport required:</h5>
               <div>{state.details.requiresTransport ? "yes" : "no"}</div>
             </Row>

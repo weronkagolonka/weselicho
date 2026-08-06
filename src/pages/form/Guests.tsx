@@ -44,7 +44,15 @@ export const Guests = () => {
   const guestForm = useForm<GuestForm>({
     defaultValues: {
       guestType: GuestType.Adult,
-      newGuest: defaultGuest(GuestType.Adult),
+      newGuest:
+        rsvpState.state.details.guests.Adult.length === 0
+          ? ({
+              name: rsvpState.state.recipient.name,
+              surname: rsvpState.state.recipient.surname,
+              pregnant: false,
+              dietaryRestriction: DietaryRestriction.None,
+            } as Guest)
+          : defaultGuest(GuestType.Adult),
       guestList: rsvpState.state.details.guests,
     },
   });
@@ -336,6 +344,8 @@ export const Guests = () => {
       </Form.Text>
     </Form>
   );
+
+  // TODO pull recipient's name and ask for pregnant and diet.
 
   return (
     <Container>

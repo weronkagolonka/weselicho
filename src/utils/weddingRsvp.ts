@@ -12,6 +12,7 @@ export function defaultWeddingRsvp(): WeddingRsvp {
       name: "",
       surname: "",
       email: "",
+      phone: "",
     },
     participating: undefined,
     details: {

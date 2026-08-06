@@ -42,6 +42,7 @@ export type RsvpDetails = {
 
 export type Recipient = {
   email: string;
+  phone: string;
   name: string;
   surname: string;
 };
