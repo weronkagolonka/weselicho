@@ -23,6 +23,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Deploy to Vercel Preview
-        run: npx vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }}
