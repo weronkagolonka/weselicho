@@ -1,7 +1,6 @@
 import { createStore } from "little-state-machine";
 import { createBrowserRouter } from "react-router";
 import App from "./App";
-import { Guests } from "./pages/form/./pages/form/ConfirmationDetails
 import { Participation } from "./pages/form/Participation";
 import { pages } from "./constants";
 import { Home } from "./pages/HomePage";
@@ -10,6 +9,7 @@ import { Summary } from "./pages/form/Summary";
 import { OtherDetails } from "./pages/form/OtherDetails";
 import { GuestLocation } from "./pages/form/GuestLocation";
 import { ConfirmationDetails } from "./pages/form/ConfirmationDetails";
+import { Guests } from "./pages/form/Guests";
 
 createStore(defaultWeddingRsvp());
 
