@@ -102,8 +102,6 @@ export const Guests = () => {
     }
   };
 
-  console.log(rsvpForm.formState.errors)
-
   const removeGuest = (guest: Guest) => {
     const index = guests.fields.findIndex(
       (g) =>
@@ -115,17 +113,11 @@ export const Guests = () => {
   };
 
   const onSubmit = (data: RsvpDetails) => {
-    // if (getGuestsofType("Adult", guests.fields).length === 0) {
-    //   rsvpForm.setError("guests", {
-    //     message: "One or two adults are required",
-    //   });
-    // } else {
       rsvpState.actions.updateAction({
         ...rsvpState.state,
         details: data,
       });
       navigate(pages.otherDetails);
-    // }
   };
 
   const registeredAdults = () => {
@@ -280,6 +272,7 @@ export const Guests = () => {
             {...guestForm.register("newGuest.pregnant")}
             type="checkbox"
             label="Pregnant?"
+            defaultChecked={guestForm.getValues("newGuest.pregnant")}
           />
         </Form.Group>
       ) : null}

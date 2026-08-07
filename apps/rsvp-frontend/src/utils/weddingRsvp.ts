@@ -24,6 +24,10 @@ export function defaultGuest(guestType: GuestType): Guest {
     name: "",
     surname: "",
     dietaryRestriction: "None",
+    pregnant: false,
+    allergy: "",
+    requiresBabyFood: false,
+    requiresHighChair: false
   };
 }
 
