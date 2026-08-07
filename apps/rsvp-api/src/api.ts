@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { serverConstants } from "./constants.js";
+import rsvpRouter from "./routes/rsvp.js";
 
 const app = express();
 
