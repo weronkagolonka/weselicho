@@ -20,10 +20,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd ./rsvp-frontend
+          cd ./apps/rsvp-frontend
           npm ci
 
       - name: Bundle
         run: |
-          cd ./rsvp-frontned
+          cd ./apps/rsvp-frontned
           npm run build
