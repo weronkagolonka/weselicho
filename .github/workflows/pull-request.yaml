@@ -25,5 +25,5 @@ jobs:
 
       - name: Bundle
         run: |
-          cd ./apps/rsvp-frontned
+          cd ./apps/rsvp-frontend
           npm run build
