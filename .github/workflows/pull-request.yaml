@@ -18,6 +18,10 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Install shared library
+        run: |
+          npm ci
+
       - name: Install dependencies
         run: |
           cd ./apps/rsvp-frontend

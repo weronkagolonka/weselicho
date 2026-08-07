@@ -24,4 +24,5 @@ service-account.json
 *.sln
 *.sw?
 .vercel
+.vite
 .env*
