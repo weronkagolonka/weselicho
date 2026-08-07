@@ -10,53 +10,52 @@ import {
 } from "react-bootstrap";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
-  DietaryRestriction,
-  GuestType,
-  type Guestt,
-  type WeddingRsvp,
-} from "../../types/weddingRsvp";
-import {
   defaultGuest,
   getGuestsofType,
   updateRsvp,
 } from "../../utils/weddingRsvp";
 import { FormButtons } from "../../components/FormButtons";
-import { pages } from "../../constants";
+import { errorTypes, pages } from "../../constants";
 import { useNavigate } from "react-router";
+import { AllDietaryRestrictions, AllGuestTypes, GuestSchema, GuestTypeSchema, RsvpDetailsSchema, type Guest, type GuestType, type RsvpDetails } from "@weselicho/shared";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {z} from "zod"
 
-type GuestForm = {
-  guestType: GuestType;
-  newGuest: Guestt;
-  guestList: Guestt[];
-};
+const GuestFormSchema = z.object({
+  guestType: GuestTypeSchema,
+  newGuest: GuestSchema
+})
+
+type GuestForm = z.infer<typeof GuestFormSchema>
 
 export const Guests = () => {
   const navigate = useNavigate();
   const rsvpState = useStateMachine({
     actions: { updateAction: updateRsvp },
   });
-  const rsvpForm = useForm<WeddingRsvp>({
-    defaultValues: rsvpState.state,
+  const rsvpForm = useForm<RsvpDetails>({
+    defaultValues: rsvpState.state.details,
+    resolver: zodResolver(RsvpDetailsSchema)
   });
   const guestForm = useForm<GuestForm>({
     defaultValues: {
-      guestType: GuestType.Adult,
+      guestType: "Adult",
       newGuest:
-        getGuestsofType(GuestType.Adult, rsvpState.state.details.guests)
+        getGuestsofType("Adult", rsvpState.state.details.guests)
           .length === 0
           ? ({
-              ...defaultGuest(GuestType.Adult),
-              type: GuestType.Adult,
-              name: rsvpState.state.recipient.name,
-              surname: rsvpState.state.recipient.surname,
-            } as Guestt)
-          : defaultGuest(GuestType.Adult),
-      guestList: rsvpState.state.details.guests,
+              ...defaultGuest("Adult"),
+              type: "Adult",
+              name: rsvpState.state.invitee.name,
+              surname: rsvpState.state.invitee.surname,
+            } as Guest)
+          : defaultGuest("Adult"),
     },
+    resolver: zodResolver(GuestFormSchema)
   });
   const guests = useFieldArray({
-    control: guestForm.control,
-    name: "guestList",
+    control: rsvpForm.control,
+    name: "guests",
   });
 
   const guestType = useWatch({
@@ -70,10 +69,11 @@ export const Guests = () => {
 
   const onAddGuestSubmit = (data: GuestForm) => {
     if (
-      data.guestType === GuestType.Adult &&
-      getGuestsofType(GuestType.Adult, guests.fields).length === 2
+      data.guestType === "Adult" &&
+      getGuestsofType("Adult", guests.fields).length === 2
     ) {
-      guestForm.setError("guestList", {
+      rsvpForm.setError("guests", {
+        type: "too_big",
         message: "Up to 2 adult guests are allowed",
       });
     } else if (
@@ -84,24 +84,25 @@ export const Guests = () => {
           g.surname === data.newGuest.surname,
       )
     ) {
-      guestForm.setError("guestList", {
+      rsvpForm.setError("guests", {
+        type: "duplicate",
         message: `${data.newGuest.name} ${data.newGuest.surname} is already added`,
       });
     } else {
       guests.append(data.newGuest);
-      if (data.guestType === GuestType.Adult) {
-        rsvpForm.clearErrors("details.guests");
+      if (data.guestType === "Adult") {
+        rsvpForm.clearErrors("guests");
       }
 
       guestForm.reset({
         ...guestForm.getValues(),
-        guestType: GuestType.Adult,
-        newGuest: defaultGuest(GuestType.Adult),
+        guestType: "Adult",
+        newGuest: defaultGuest("Adult"),
       });
     }
   };
 
-  const removeGuest = (guest: Guestt) => {
+  const removeGuest = (guest: Guest) => {
     const index = guests.fields.findIndex(
       (g) =>
         g.type === guest.type &&
@@ -111,25 +112,16 @@ export const Guests = () => {
     guests.remove(index);
   };
 
-  const onSubmit = () => {
-    if (getGuestsofType(GuestType.Adult, guests.fields).length === 0) {
-      rsvpForm.setError("details.guests", {
-        message: "One or two adults are required",
-      });
-    } else {
+  const onSubmit = (data: RsvpDetails) => {
       rsvpState.actions.updateAction({
         ...rsvpState.state,
-        details: {
-          ...rsvpState.state.details,
-          guests: guestForm.getValues("guestList"),
-        },
+        details: data,
       });
       navigate(pages.otherDetails);
-    }
   };
 
   const registeredAdults = () => {
-    const adults = getGuestsofType(GuestType.Adult, guests.fields);
+    const adults = getGuestsofType("Adult", guests.fields);
     return adults.length > 0 ? (
       adults.map((a, index) => (
         <ListGroup.Item
@@ -142,7 +134,7 @@ export const Guests = () => {
               {a.name} {a.surname}
             </div>
             Dietary restrictions: {a.dietaryRestriction}
-            {a.dietaryRestriction === DietaryRestriction.Allergy
+            {a.dietaryRestriction === "Allergy"
               ? `, allergy/intolerance: ${a.allergy}`
               : ""}
             {a.pregnant ? ", no alcohol" : ""}
@@ -155,7 +147,7 @@ export const Guests = () => {
     );
   };
   const registeredTeens = () => {
-    const teens = getGuestsofType(GuestType.Teen, guests.fields);
+    const teens = getGuestsofType("Teen", guests.fields);
     return teens.length > 0 ? (
       teens.map((t, index) => (
         <ListGroup.Item
@@ -168,7 +160,7 @@ export const Guests = () => {
               {t.name} {t.surname}
             </div>
             Dietary restrictions: {t.dietaryRestriction}
-            {t.dietaryRestriction === DietaryRestriction.Allergy
+            {t.dietaryRestriction === "Allergy"
               ? `, allergy/intolerance: ${t.allergy}`
               : ""}
           </div>
@@ -180,7 +172,7 @@ export const Guests = () => {
     );
   };
   const registeredChildren = () => {
-    const children = getGuestsofType(GuestType.Child, guests.fields);
+    const children = getGuestsofType("Child", guests.fields);
     return children.length > 0 ? (
       children.map((c, index) => (
         <ListGroup.Item
@@ -193,7 +185,7 @@ export const Guests = () => {
               {c.name} {c.surname}
             </div>
             Dietary restrictions: {c.dietaryRestriction}
-            {c.dietaryRestriction === DietaryRestriction.Allergy
+            {c.dietaryRestriction === "Allergy"
               ? `, allergy/intolerance: ${c.allergy}`
               : ""}
           </div>
@@ -205,7 +197,7 @@ export const Guests = () => {
     );
   };
   const registeredBabies = () => {
-    const babies = getGuestsofType(GuestType.Baby, guests.fields);
+    const babies = getGuestsofType("Baby", guests.fields);
     return babies.length > 0 ? (
       babies.map((b, index) => (
         <ListGroup.Item
@@ -217,7 +209,7 @@ export const Guests = () => {
             <div className="fw-bold">
               {b.name} {b.surname}
             </div>
-            Requires food: {b.requiresFood ? "yes" : "no"}, requires separate
+            Requires food: {b.requiresBabyFood ? "yes" : "no"}, requires separate
             chair: {b.requiresHighChair ? "yes" : "no"}
           </div>
           <CloseButton onClick={() => removeGuest(b)} />
@@ -244,13 +236,13 @@ export const Guests = () => {
               guestType: e.target.value as GuestType,
               newGuest: defaultGuest(e.target.value as GuestType),
             });
-            guestForm.clearErrors("guestList");
+            rsvpForm.clearErrors("guests");
           }}
         >
-          {Object.values(GuestType).map((gt, index) => {
+          {Object.values(AllGuestTypes).map((gt, index) => {
             return (
               <option value={gt} key={`guest-type-${index}`}>
-                {GuestType[gt]}
+                {gt}
               </option>
             );
           })}
@@ -274,22 +266,23 @@ export const Guests = () => {
           placeholder="Guest surname"
         />
       </Form.Group>
-      {guestType === GuestType.Adult ? (
+      {guestType === "Adult" ? (
         <Form.Group className="mb-3">
           <Form.Check
             {...guestForm.register("newGuest.pregnant")}
             type="checkbox"
             label="Pregnant?"
+            defaultChecked={guestForm.getValues("newGuest.pregnant")}
           />
         </Form.Group>
       ) : null}
-      {guestType === GuestType.Baby ? (
+      {guestType === "Baby" ? (
         <Form.Group className="mb-3">
           <Form.Check
-            {...guestForm.register("newGuest.requiresFood")}
+            {...guestForm.register("newGuest.requiresBabyFood")}
             label="Requires food?"
             type="checkbox"
-            defaultChecked={guestForm.getValues("newGuest.requiresFood")}
+            defaultChecked={guestForm.getValues("newGuest.requiresBabyFood")}
           />
           <Form.Check
             {...guestForm.register("newGuest.requiresHighChair")}
@@ -299,19 +292,19 @@ export const Guests = () => {
           />
         </Form.Group>
       ) : null}
-      {guestType !== GuestType.Baby ? (
+      {guestType !== "Baby" ? (
         <>
           <Form.Group className="mb-3">
             <Form.Label>Food restrictions</Form.Label>
             <Form.Select {...guestForm.register("newGuest.dietaryRestriction")}>
-              {Object.values(DietaryRestriction).map((d, index) => (
+              {AllDietaryRestrictions.map((d, index) => (
                 <option key={`diet-${index}`} value={d}>
                   {d}
                 </option>
               ))}
             </Form.Select>
           </Form.Group>
-          {diet === DietaryRestriction.Allergy ? (
+          {diet === "Allergy" ? (
             <Form.Group className="mb-3">
               <Form.Label>Type of allergy/intolerance</Form.Label>
               <Form.Control
@@ -328,7 +321,9 @@ export const Guests = () => {
         Add guest
       </Button>
       <Form.Text className="mx-3">
-        {guestForm.formState.errors.guestList?.message}
+        {[errorTypes.ARRAY_TOO_BIG, errorTypes.ARRAY_DUPLICATE_ELEMENT].includes(rsvpForm.formState.errors.guests?.type ?? "") ?
+          `${rsvpForm.formState.errors.guests?.message}` : null
+        }
       </Form.Text>
     </Form>
   );
@@ -369,7 +364,9 @@ export const Guests = () => {
           previousPage={pages.participation}
         />
         <Form.Text className="mx-3">
-          {rsvpForm.formState.errors.details?.guests?.message}
+          {rsvpForm.formState.errors.guests?.type === errorTypes.ARRAY_TOO_SMALL ?
+            `${rsvpForm.formState.errors.guests?.message}` : null
+          }
         </Form.Text>
       </Form>
     </Container>

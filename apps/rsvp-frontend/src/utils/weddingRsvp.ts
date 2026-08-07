@@ -1,15 +1,8 @@
-import {
-  DietaryRestriction,
-  GuestType,
-  type BabyGuest,
-  type Guest,
-  type Guestt,
-  type WeddingRsvp,
-} from "../types/weddingRsvp";
+import { type Guest, type GuestType, type WeddingRsvp } from "@weselicho/shared";
 
 export function defaultWeddingRsvp(): WeddingRsvp {
   return {
-    recipient: {
+    invitee: {
       name: "",
       surname: "",
       email: "",
@@ -25,22 +18,16 @@ export function defaultWeddingRsvp(): WeddingRsvp {
   };
 }
 
-export function defaultGuest(guestType: GuestType): Guestt {
+export function defaultGuest(guestType: GuestType): Guest {
   return {
     type: guestType,
     name: "",
     surname: "",
-    dietaryRestriction: DietaryRestriction.None,
-  };
-}
-
-export function updateGuest<T extends Guest | BabyGuest>(
-  guest: T,
-  payload: Partial<T>,
-): T {
-  return {
-    ...guest,
-    ...payload,
+    dietaryRestriction: "None",
+    pregnant: false,
+    allergy: "",
+    requiresBabyFood: false,
+    requiresHighChair: false
   };
 }
 
@@ -58,6 +45,6 @@ export function updateRsvp(
   };
 }
 
-export function getGuestsofType(type: GuestType, guests: Guestt[]): Guestt[] {
+export function getGuestsofType(type: GuestType, guests: Guest[]): Guest[] {
   return guests.filter((g) => g.type === type);
 }

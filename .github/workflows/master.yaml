@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build:
+  build-frontend:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,11 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install all modules
+        run: |
+          npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Bundle frontend
+        run: |
+          cd ./apps/rsvp-frontend
+          npm run build
