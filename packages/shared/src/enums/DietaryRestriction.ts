@@ -6,5 +6,6 @@ export const DietaryRestrictionSchema = z.enum([
   "Vegetarian",
   "Allergy"
 ])
+export const AllDietaryRestrictions = DietaryRestrictionSchema.options
 
 export type DietaryRestriction = z.infer<typeof DietaryRestrictionSchema>

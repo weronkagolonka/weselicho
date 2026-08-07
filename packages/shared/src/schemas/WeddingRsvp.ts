@@ -1,9 +1,11 @@
-import { Invitee, InviteeSchema } from "./Invitee";
-import { RsvpDetails, RsvpDetailsSchema } from "./RsvpDetails";
+import { InviteeSchema } from "./Invitee.js";
+import { RsvpDetailsSchema } from "./RsvpDetails.js";
 import { z } from "zod";
 
 export const WeddingRsvpSchema = z.object({
-  participating: z.boolean().optional(),
+  participating: z.boolean({
+    error: "Please confirm"
+  }).optional(),
   invitee: InviteeSchema,
   details: RsvpDetailsSchema
 })

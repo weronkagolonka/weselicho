@@ -11,7 +11,7 @@ export const Completion = () => {
           <h4>Thank you for submitting your feedback.</h4>
           {state.participating ? (
             <div>
-              An email with confirmation will be sent to {state.recipient.email}
+              An email with confirmation will be sent to {state.invitee.email}
             </div>
           ) : null}
         </Col>

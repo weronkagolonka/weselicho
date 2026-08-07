@@ -1,13 +1,13 @@
-import { DietaryRestriction, DietaryRestrictionSchema } from "../enums/DietaryRestriction";
-import { GuestType, GuestTypeSchema } from "../enums/GuestType";
+import { DietaryRestrictionSchema } from "../enums/DietaryRestriction.js";
+import { GuestTypeSchema } from "../enums/GuestType.js";
 import {z} from "zod"
 
 export const GuestSchema = z.object({
-  type: GuestTypeSchema.default("Adult"),
+  type: GuestTypeSchema,
   name: z.string().trim().min(1, "Name cannot be blank"),
-  surname: z.string().trim().min(1, "Name cannot be blank"),
+  surname: z.string().trim().min(1, "Surname cannot be blank"),
   pregnant: z.boolean().optional(),
-  dietaryRestriction: DietaryRestrictionSchema.default("None"),
+  dietaryRestriction: DietaryRestrictionSchema,
   allergy: z.string().optional(),
   requiresHighChair: z.boolean().optional(),
   requiresBabyFood: z.boolean().optional()

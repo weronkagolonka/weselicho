@@ -2,34 +2,46 @@ import { useStateMachine } from "little-state-machine";
 import { Form } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { guestFormFieldIds, pages } from "../../constants";
-import type { WeddingRsvp } from "../../types/weddingRsvp";
+import { pages } from "../../constants";
 import { updateRsvp } from "../../utils/weddingRsvp";
 import { FormButtons } from "../../components/FormButtons";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const ParticipationSchema = z.object({
+  participating: z.boolean()
+})
+
+type ParticipationForm = z.infer<typeof ParticipationSchema>
 
 export const Participation = () => {
   const { state, actions } = useStateMachine({
     actions: { updateAction: updateRsvp },
   });
-  const { control, handleSubmit, formState } = useForm<WeddingRsvp>({
-    defaultValues: state,
+  const { control, handleSubmit, formState } = useForm<ParticipationForm>({
+    defaultValues: { participating: state.participating },
+    resolver: zodResolver(ParticipationSchema)
   });
   const navigate = useNavigate();
 
-  const onSubmit = (data: WeddingRsvp) => {
+  const onSubmit = (data: ParticipationForm) => {
+    actions.updateAction({
+      ...state,
+      participating: data.participating
+    });
     if (data.participating) {
-      actions.updateAction(data);
       navigate(pages.guestLocation);
     } else {
       navigate(pages.completion);
     }
   };
 
+  console.log(formState.errors.participating)
+
   return (
     <Form className="rsvp-form-container" onSubmit={handleSubmit(onSubmit)}>
       <h2>Confirm your participation</h2>
       <Form.Group
-        controlId={guestFormFieldIds.participation}
         title="Confirm participation"
         className="mb-3"
       >
@@ -37,11 +49,7 @@ export const Participation = () => {
         <Controller
           name="participating"
           control={control}
-          rules={{
-            validate: (value) => value !== undefined || "Please choose",
-          }}
           render={({ field }) => {
-            console.log(field.value);
             return (
               <Form.Group>
                 <Form.Check

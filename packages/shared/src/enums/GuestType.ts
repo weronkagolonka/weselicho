@@ -6,5 +6,6 @@ export const GuestTypeSchema = z.enum([
   "Child",
   "Baby"
 ])
+export const AllGuestTypes = GuestTypeSchema.options
 
 export type GuestType = z.infer<typeof GuestTypeSchema>

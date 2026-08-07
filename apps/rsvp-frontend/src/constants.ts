@@ -1,16 +1,3 @@
-import { GuestType } from "./types/weddingRsvp";
-
-const guestFormFieldIdPrefix = "guest-form-field-";
-export const guestFormFieldIds = {
-  details: `${guestFormFieldIdPrefix}details`,
-  participation: `${guestFormFieldIdPrefix}participation`,
-  email: `${guestFormFieldIdPrefix}email`,
-  [GuestType.Adult]: `${guestFormFieldIdPrefix}adult-guests`,
-  [GuestType.Teen]: `${guestFormFieldIdPrefix}teen-guests`,
-  [GuestType.Child]: `${guestFormFieldIdPrefix}child-guests`,
-  [GuestType.Baby]: `${guestFormFieldIdPrefix}baby-guests`,
-};
-
 export const pages = {
   home: "/",
   confirmationDetails: "/form-confirmation-details",
@@ -21,3 +8,9 @@ export const pages = {
   summary: "/form-summary",
   completion: "/form-completion",
 };
+
+export const errorTypes = {
+  ARRAY_TOO_BIG: "too_big",
+  ARRAY_TOO_SMALL: "too_small",
+  ARRAY_DUPLICATE_ELEMENT: "duplicate"
+}

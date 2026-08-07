@@ -2,7 +2,6 @@ import { useStateMachine } from "little-state-machine";
 import { Col, Container, Form, ListGroup, Row } from "react-bootstrap";
 import { FormButtons } from "../../components/FormButtons";
 import { pages } from "../../constants";
-import { DietaryRestriction, GuestType } from "../../types/weddingRsvp";
 import { getGuestsofType } from "../../utils/weddingRsvp";
 import { useNavigate } from "react-router";
 
@@ -10,10 +9,10 @@ export const Summary = () => {
   const { state } = useStateMachine();
   const navigate = useNavigate();
 
-  const adults = getGuestsofType(GuestType.Adult, state.details.guests);
-  const teens = getGuestsofType(GuestType.Teen, state.details.guests);
-  const children = getGuestsofType(GuestType.Child, state.details.guests);
-  const babies = getGuestsofType(GuestType.Baby, state.details.guests);
+  const adults = getGuestsofType("Adult", state.details.guests);
+  const teens = getGuestsofType("Teen", state.details.guests);
+  const children = getGuestsofType("Child", state.details.guests);
+  const babies = getGuestsofType("Baby", state.details.guests);
 
   const onSubmit = () => {
     navigate(pages.completion);
@@ -27,11 +26,11 @@ export const Summary = () => {
           <h4>Details:</h4>
           <Row className="mb-3">
             <h5>Confirmation email:</h5>
-            <div>{state.recipient.email}</div>
+            <div>{state.invitee.email}</div>
           </Row>
           <Row className="mb-3">
             <h5>Phone number:</h5>
-            <div>{state.recipient.phone}</div>
+            <div>{state.invitee.phone}</div>
           </Row>
           <Row className="mb-3">
             <h5>Transport required:</h5>
@@ -57,7 +56,7 @@ export const Summary = () => {
                     {a.name} {a.surname}
                   </div>
                   Dietary restrictions: {a.dietaryRestriction}
-                  {a.dietaryRestriction === DietaryRestriction.Allergy
+                  {a.dietaryRestriction === "Allergy"
                     ? `, allergy/intolerance: ${a.allergy}`
                     : ""}
                   {a.pregnant ? ", no alcohol" : ""}
@@ -79,7 +78,7 @@ export const Summary = () => {
                       {t.name} {t.surname}
                     </div>
                     Dietary restrictions: {t.dietaryRestriction}
-                    {t.dietaryRestriction === DietaryRestriction.Allergy
+                    {t.dietaryRestriction === "Allergy"
                       ? `, allergy/intolerance: ${t.allergy}`
                       : ""}
                   </div>
@@ -103,7 +102,7 @@ export const Summary = () => {
                       {c.name} {c.surname}
                     </div>
                     Dietary restrictions: {c.dietaryRestriction}
-                    {c.dietaryRestriction === DietaryRestriction.Allergy
+                    {c.dietaryRestriction === "Allergy"
                       ? `, allergy/intolerance: ${c.allergy}`
                       : ""}
                   </div>
@@ -126,7 +125,7 @@ export const Summary = () => {
                     <div className="fw-bold">
                       {b.name} {b.surname}
                     </div>
-                    Requires food: {b.requiresFood ? "yes" : "no"}, requires
+                    Requires food: {b.requiresBabyFood ? "yes" : "no"}, requires
                     separate chair: {b.requiresHighChair ? "yes" : "no"}
                   </div>
                 </ListGroup.Item>

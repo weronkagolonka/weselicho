@@ -1,24 +1,42 @@
 import { Controller, useForm } from "react-hook-form";
-import type { WeddingRsvp } from "../../types/weddingRsvp";
 import { Form } from "react-bootstrap";
 import { useStateMachine } from "little-state-machine";
 import { updateRsvp } from "../../utils/weddingRsvp";
 import { FormButtons } from "../../components/FormButtons";
 import { pages } from "../../constants";
 import { useNavigate } from "react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const OtherDetailsSchema = z.object({
+  requiresTransport: z.boolean(),
+  requiresAccommodation: z.boolean()
+})
+
+type OtherDetailsForm = z.infer<typeof OtherDetailsSchema>
 
 export const OtherDetails = () => {
   const navigate = useNavigate();
   const { actions, state } = useStateMachine({
     actions: { updateAction: updateRsvp },
   });
-  const { control, handleSubmit, formState } = useForm<WeddingRsvp>({
-    defaultValues: state,
+  const { control, handleSubmit, formState } = useForm<OtherDetailsForm>({
+    defaultValues: {
+      requiresTransport: state.details.requiresTransport,
+      requiresAccommodation: state.details.requiresAccommodation
+    },
+    resolver: zodResolver(OtherDetailsSchema)
   });
 
-  const onSubmit = (data: WeddingRsvp) => {
-    actions.updateAction(data);
-    console.log("NAVIGATE");
+  const onSubmit = (data: OtherDetailsForm) => {
+    actions.updateAction({
+      ...state,
+      details: {
+        ...state.details,
+        requiresTransport: data.requiresTransport,
+        requiresAccommodation: data.requiresAccommodation
+      }
+    });
     navigate(pages.summary);
   };
 
@@ -26,7 +44,7 @@ export const OtherDetails = () => {
     <Form className="rsvp-form-container" onSubmit={handleSubmit(onSubmit)}>
       <h2>Other details</h2>
       <Controller
-        name="details.requiresTransport"
+        name="requiresTransport"
         control={control}
         rules={{
           validate: (value) => value !== undefined || "Please choose",
@@ -52,7 +70,7 @@ export const OtherDetails = () => {
                 onChange={() => field.onChange(false)}
               />
               <Form.Text>
-                {formState.errors.details?.requiresTransport?.message}
+                {formState.errors.requiresTransport?.message}
               </Form.Text>
             </Form.Group>
           );
@@ -60,7 +78,7 @@ export const OtherDetails = () => {
       />
       {state.details.fromAbroad ? (
         <Controller
-          name="details.requiresAccommodation"
+          name="requiresAccommodation"
           control={control}
           rules={{
             validate: (value) => value !== undefined || "Please choose",
@@ -87,7 +105,7 @@ export const OtherDetails = () => {
                   onChange={() => field.onChange(false)}
                 />
                 <Form.Text>
-                  {formState.errors.details?.requiresAccommodation?.message}
+                  {formState.errors.requiresAccommodation?.message}
                 </Form.Text>
               </Form.Group>
             );
